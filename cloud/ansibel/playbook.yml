@@ -1,0 +1,45 @@
+---
+- name: Nginx installation
+  hosts: all
+  become: yes
+  tasks:  
+    - name: Update apt-get repo and cache
+      ansible.builtin.apt: 
+        update_cache: yes 
+        force_apt_get: yes 
+        cache_valid_time: 3600
+    - name: Install nginx
+      ansible.builtin.apt:
+        name: nginx
+        state: present
+    - name: Installing 3 things
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop: 
+          - ca-certificates 
+          - curl 
+          - gnupg
+    - name: Add Docker GPG key
+      apt_key:
+        url: https://download.docker.com/linux/ubuntu/gpg 
+        state: present
+    - name: Add Docker Repository
+      apt_repository:
+        repo: deb https://download.docker.com/linux/ubuntu bionic stable
+        state: present
+    - name: Update apt-get repo and cache
+      ansible.builtin.apt: 
+        update_cache: yes 
+        force_apt_get: yes 
+        cache_valid_time: 3600
+    - name: Installing docker
+      ansible.builtin.apt:
+        name: "{{ item }}"
+        state: present
+      loop: 
+          - docker-ce 
+          - docker-ce-cli 
+          - containerd.io 
+          - docker-buildx-plugin 
+          - docker-compose-plugin
